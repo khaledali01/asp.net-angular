@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddHealthChecks();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -14,9 +15,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
 app.UseRouting();
 
+app.UseHealthChecks(new PathString("/api/health"));
 
 app.MapControllerRoute(
     name: "default",
