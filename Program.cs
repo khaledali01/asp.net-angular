@@ -1,8 +1,14 @@
+global using HealthCheck;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddCheck("ICMP_01", new ICMPHealthCheck("www.facebook.com", 100))
+	.AddCheck("ICMP_02", new ICMPHealthCheck("www.google.com", 100))
+	.AddCheck("ICMP_03", new ICMPHealthCheck($"www.{Guid.NewGuid():N}.com", 100));
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -20,7 +26,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseHealthChecks(new PathString("/api/health"));
+app.UseHealthChecks(new PathString("/api/health"), new CustomHealthCheckOptions());
 
 app.MapControllerRoute(
     name: "default",
